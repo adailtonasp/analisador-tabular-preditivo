@@ -168,10 +168,10 @@ while(True):
         ruleNumber = currentAction[1] # Identifica a regra usada para fazer a reducao
         rule = grammar[ruleNumber] # Regra utilizada na reducao
 
-        #substituir gancho na pilha de simbolos
-        #remove os ultimos n elementos da pilha de simbolo
-        #sendo n a quantidade de caracteres do lado direito da regra especificada
-        simbolsStack = simbolsStack[:len(simbolo) - len(regra[1])] #inconsistente?
+        # Substitui o gancho na pilha de símbolos
+        # Remove os ultimos n elementos da pilha de símbolos
+        # Sendo n a quantidade de caracteres do lado direito da regra especificada
+        simbolsStack = simbolsStack[:len(simbolo) - len(regra[1])] # Inconsistente?
         #empilha o lado esquerdo da regra
         simbolsStack.append(rule[0])
 
