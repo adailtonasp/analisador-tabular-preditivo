@@ -10,7 +10,8 @@ countActions = 0 # Quantidade de Ações
 countTransitions = 0 # Quantidade de Transições
 grammar = [] # Gramática inserida pelo Usuário
 actionsTable = []  # Tabela de Ações
-actions = []  # Variáveis das Ações
+actions = []  # Terminais das Ações
+transitions = []  # Váriaveis das transições
 sentence = "" # Sentença a ser analisada
 statesStack = [] # Pilha de estados
 simbolsStack = [] # Pilha de símbolos já processados
@@ -20,7 +21,6 @@ while(not goAhead):
     print("------------ Preenchimento dos Dados Iniciais ------------")
     try:
         countStates = int(input("Insira a quantidade de estados: "))
-        countStates = range(countStates)
 
         countActions = int(input("Insira a quantidade de ações: "))
 
@@ -72,12 +72,11 @@ while(not goAhead):
 
 goAhead = False  # Indicar se o usuário deve prosseguir
 transitionsTable = []  # Tabela de transições
-transitions = []  # Terminais das transições
 while(not goAhead):
     print("-------- Preenchimento dos Dados da Tabela de Transições -----")
     print("*   entradas separadas por vírgual. @ para entradas vazias   *\n")
     try:
-        actions = input(
+        transitions = input(
             f"Insira as variáveis({countTransitions}) das transições: ").split(',')
 
         transitionLine = []
@@ -130,61 +129,67 @@ while(not goAhead):
 # - Exemplo: id * id + id
 
 sentence = input("Insira a sentença a ser avaliada: ")
+sentence = sentence.split(" ")
+sentence.append("$") # anexa $ ao final da entrada
 
 # 5. Análise Preditiva
 statesStack = []
 sentenceSimbols = []
 
 # Retorna uma ação da tabela, a partir de uma dada variável de ação(a) e estado(s)
-def getCurrentAction(a,s): 
+def getCurrentAction(a,s):
     actionIndex = actions.index(a)
-    actionsRow = actionsTable[s]
+    actionsRow = actionsTable[int(s)]
     return actionsRow[actionIndex] # retorna a ação encontrada
 
 # Empilha o estado inicial
 statesStack.append('0')
 
 # Recebe o primeiro símbolo da sentença
-actionVar = sentence[0]
+firstEle = sentence[0]
+
+print("pilha","\t","simbolo","\t","entrada","\t","acao\n")
 
 while(True):
-    currentState = statesStack[-1] # Estado no topo da pilha
+    currentState = statesStack[-1] # Estado do topo da pilha
 
-    currentAction = getCurrentAction(actionVar,currentState)
+    currentAction = getCurrentAction(firstEle,currentState)
+
+    print(statesStack,"\t",simbolsStack,"\t",sentence ,"\t",currentAction)
 
     if(currentAction[0] == 's'): # Significa que a ação é um empilhamento (shift)
 
-        statesStack.append(currentAction[1]) # Empilha o estado
+        statesStack.append(currentAction[1:]) # Empilha o estado
 
         processedSimbol = sentence.pop(0) # Remove o simbolo lido da fita
 
         simbolsStack.append(processedSimbol) # Adiciona na pilha de simbolos já processados
 
-        actionVar = sentence[0] # Atualiza o proximo caracter de entrada
+        firstEle = sentence[0] # Atualiza o proximo caracter de entrada
 
     elif (currentAction[0] == 'r'): # Siginifica que a acao é uma reducão(reduce)
 
         # Identificar gancho
-        ruleNumber = currentAction[1] # Identifica a regra usada para fazer a reducao
-        rule = grammar[ruleNumber] # Regra utilizada na reducao
+        ruleNumber = int(currentAction[1:]) # Identifica a regra usada para fazer a reducao
+        rule = grammar[ruleNumber - 1] # Regra utilizada na reducao
 
-        # Substitui o gancho na pilha de símbolos
         # Remove os ultimos n elementos da pilha de símbolos
         # Sendo n a quantidade de caracteres do lado direito da regra especificada
-        simbolsStack = simbolsStack[:len(simbolo) - len(regra[1])] # Inconsistente?
+        simbolsStack = simbolsStack[:len(simbolsStack) - len(rule[1])]
+
         #empilha o lado esquerdo da regra
         simbolsStack.append(rule[0])
 
-        # Remove o elemento da pilha
-        statesStack.pop()
-
+        # Remove os elementos da pilha
+        statesStack = statesStack[:len(statesStack)-len(rule[1])]
+ 
         # Empilha o novo estado de acordo com a Tabela de Transicoes
-        top = statesStack[0]
-        index = transitionsTable.index(rule[0])
-        newState = transitionsTable[top][index]
+        top = statesStack[-1]
+        index = transitions.index(rule[0])
+        newState = transitionsTable[int(top)][index]
         statesStack.append(newState)
 
-        print(rule[0],"->",rule[1])
+        #print(rule[0],"->",rule[1])
 
     elif(currentAction == "$"):
         print("Fim")
