@@ -1,20 +1,21 @@
 # Trabalho de Implementação - Construção de Compiladores - 2021
 # Adailton Palhano, Felipe Barros e Maria Theresa.
 import os
+import csv
 
 goAhead = False  # indicar se o usuário deve prosseguir
 
 # Variáveis utilizadas no programa
-countStates = 0 # Quantidade de Estados
-countActions = 0 # Quantidade de Ações
-countTransitions = 0 # Quantidade de Transições
-grammar = [] # Gramática inserida pelo Usuário
+countStates = 0  # Quantidade de Estados
+countActions = 0  # Quantidade de Ações
+countTransitions = 0  # Quantidade de Transições
+grammar = []  # Gramática inserida pelo Usuário
 actionsTable = []  # Tabela de Ações
 actions = []  # Terminais das Ações
 transitions = []  # Váriaveis das transições
-sentence = "" # Sentença a ser analisada
-statesStack = [] # Pilha de estados
-simbolsStack = [] # Pilha de símbolos já processados
+sentence = ""  # Sentença a ser analisada
+statesStack = []  # Pilha de estados
+simbolsStack = []  # Pilha de símbolos já processados
 
 # 1. Entrada dos Dados iniciais
 while(not goAhead):
@@ -32,7 +33,8 @@ while(not goAhead):
             "\nPressione 1 para continuar. Qualquer outra tecla para voltar: ")
         goAhead = goAhead == "1"
     except:
-        input("\nVocê inseriu algum dado incorreto. Pressione qualquer tecla para repetir: ")
+        input(
+            "\nVocê inseriu algum dado incorreto. Pressione qualquer tecla para repetir: ")
         goAhead = False
     os.system('cls' if os.name == 'nt' else 'clear')
 
@@ -53,7 +55,8 @@ while(not goAhead):
 
         actionLine = []
         for i in range(countStates):
-            actionLine = input(f"Insira as ações({countActions}) da linha {i+1}: ")
+            actionLine = input(
+                f"Insira as ações({countActions}) da linha {i+1}: ")
             actionLine = actionLine.split(',')
             actionsTable.append(actionLine)
 
@@ -61,7 +64,8 @@ while(not goAhead):
             "\nPressione 1 para continuar. Qualquer outra tecla para repetir: ")
         goAhead = goAhead == "1"
     except:
-        input("\nVocê inseriu algum dado incorreto. Pressione qualquer tecla para repetir: ")
+        input(
+            "\nVocê inseriu algum dado incorreto. Pressione qualquer tecla para repetir: ")
         goAhead = False
     os.system('cls' if os.name == 'nt' else 'clear')
 
@@ -74,7 +78,7 @@ goAhead = False  # Indicar se o usuário deve prosseguir
 transitionsTable = []  # Tabela de transições
 while(not goAhead):
     print("-------- Preenchimento dos Dados da Tabela de Transições -----")
-    print("*   entradas separadas por vírgual. @ para entradas vazias   *\n")
+    print("*   entradas separadas por vírgula. @ para entradas vazias   *\n")
     try:
         transitions = input(
             f"Insira as variáveis({countTransitions}) das transições: ").split(',')
@@ -90,7 +94,8 @@ while(not goAhead):
             "\nPressione 1 para continuar. Qualquer outra tecla para repetir: ")
         goAhead = goAhead == "1"
     except:
-        input("\nVocê inseriu algum dado incorreto. Pressione qualquer tecla para repetir: ")
+        input(
+            "\nVocê inseriu algum dado incorreto. Pressione qualquer tecla para repetir: ")
         goAhead = False
     os.system('cls' if os.name == 'nt' else 'clear')
 
@@ -130,17 +135,18 @@ while(not goAhead):
 
 sentence = input("Insira a sentença a ser avaliada: ")
 sentence = sentence.split(" ")
-sentence.append("$") # anexa $ ao final da entrada
+sentence.append("$")  # anexa $ ao final da entrada
+
+print()
+print()
 
 # 5. Análise Preditiva
-statesStack = []
-sentenceSimbols = []
-
 # Retorna uma ação da tabela, a partir de uma dada variável de ação(a) e estado(s)
-def getCurrentAction(a,s):
+def getCurrentAction(a, s):
     actionIndex = actions.index(a)
     actionsRow = actionsTable[int(s)]
-    return actionsRow[actionIndex] # retorna a ação encontrada
+    return actionsRow[actionIndex]  # retorna a ação encontrada
+
 
 # Empilha o estado inicial
 statesStack.append('0')
@@ -148,30 +154,32 @@ statesStack.append('0')
 # Recebe o primeiro símbolo da sentença
 firstEle = sentence[0]
 
-print("pilha","\t","simbolo","\t","entrada","\t","acao\n")
+print("pilha", "\t", "simbolo", "\t", "entrada", "\t", "acao\n")
 
 while(True):
-    currentState = statesStack[-1] # Estado do topo da pilha
+    currentState = statesStack[-1]  # Estado do topo da pilha
 
-    currentAction = getCurrentAction(firstEle,currentState)
+    currentAction = getCurrentAction(firstEle, currentState)
 
-    print(statesStack,"\t",simbolsStack,"\t",sentence ,"\t",currentAction)
+    print(statesStack, "\t", simbolsStack, "\t", sentence, "\t", currentAction)
 
-    if(currentAction[0] == 's'): # Significa que a ação é um empilhamento (shift)
+    if(currentAction[0] == 's'):  # Significa que a ação é um empilhamento (shift)
 
-        statesStack.append(currentAction[1:]) # Empilha o estado
+        statesStack.append(currentAction[1:])  # Empilha o estado
 
-        processedSimbol = sentence.pop(0) # Remove o simbolo lido da fita
+        processedSimbol = sentence.pop(0)  # Remove o simbolo lido da fita
 
-        simbolsStack.append(processedSimbol) # Adiciona na pilha de simbolos já processados
+        # Adiciona na pilha de simbolos já processados
+        simbolsStack.append(processedSimbol)
 
-        firstEle = sentence[0] # Atualiza o proximo caracter de entrada
+        firstEle = sentence[0]  # Atualiza o proximo caracter de entrada
 
-    elif (currentAction[0] == 'r'): # Siginifica que a acao é uma reducão(reduce)
+    elif (currentAction[0] == 'r'):  # Siginifica que a acao é uma reducão(reduce)
 
         # Identificar gancho
-        ruleNumber = int(currentAction[1:]) # Identifica a regra usada para fazer a reducao
-        rule = grammar[ruleNumber - 1] # Regra utilizada na reducao
+        # Identifica a regra usada para fazer a reducao
+        ruleNumber = int(currentAction[1:])
+        rule = grammar[ruleNumber - 1]  # Regra utilizada na reducao
 
         # Remove os ultimos n elementos da pilha de símbolos
         # Sendo n a quantidade de caracteres do lado direito da regra especificada
@@ -182,7 +190,7 @@ while(True):
 
         # Remove os elementos da pilha
         statesStack = statesStack[:len(statesStack)-len(rule[1])]
- 
+
         # Empilha o novo estado de acordo com a Tabela de Transicoes
         top = statesStack[-1]
         index = transitions.index(rule[0])
@@ -193,7 +201,11 @@ while(True):
 
     elif(currentAction == "$"):
         print("Fim")
+        with open('result.csv', 'w', newline='') as csvfile:
+            newFile = csv.writer(csvfile, delimiter=';')
+            newFile.writerow(['Pilha', 'Simbolo', 'Entrada', 'Acao'])
+            # newFile.writerow(['Spam', 'Lovely Spam', 'Wonderful Spam'])
         break
     else:
-        print("Erro")   
+        print("Erro")
         break
