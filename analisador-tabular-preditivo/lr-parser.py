@@ -142,6 +142,8 @@ print()
 
 # 5. Análise Preditiva
 # Retorna uma ação da tabela, a partir de uma dada variável de ação(a) e estado(s)
+listaDerivacao = []
+
 def getCurrentAction(a, s):
     actionIndex = actions.index(a)
     actionsRow = actionsTable[int(s)]
@@ -162,6 +164,8 @@ while(True):
     currentAction = getCurrentAction(firstEle, currentState)
 
     print(statesStack, "\t", simbolsStack, "\t", sentence, "\t", currentAction)
+
+    listaDerivacao.append([statesStack,simbolsStack,sentence,currentAction])
 
     if(currentAction[0] == 's'):  # Significa que a ação é um empilhamento (shift)
 
@@ -204,6 +208,8 @@ while(True):
         with open('result.csv', 'w', newline='') as csvfile:
             newFile = csv.writer(csvfile, delimiter=';')
             newFile.writerow(['Pilha', 'Simbolo', 'Entrada', 'Acao'])
+            for i in listaDerivacao:
+                newFile.writerow([i[0],i[1],i[2],i[3]])
             # newFile.writerow(['Spam', 'Lovely Spam', 'Wonderful Spam'])
         break
     else:
