@@ -210,7 +210,6 @@ while(True):
             newFile.writerow(['Pilha', 'Simbolo', 'Entrada', 'Acao'])
             for i in listaDerivacao:
                 newFile.writerow([i[0],i[1],i[2],i[3]])
-            # newFile.writerow(['Spam', 'Lovely Spam', 'Wonderful Spam'])
         break
     else:
         print("Erro")
